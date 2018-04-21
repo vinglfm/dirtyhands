@@ -16,4 +16,3 @@ class UpsideDownNumbers():
             if digit not in self.allowed_digits or self.map_digits.get(digit, digit) != number_str[-idx-1]:
                 return False
         return True
-    

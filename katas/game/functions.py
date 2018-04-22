@@ -58,7 +58,7 @@ def create_star(setting, screen):
     return star
 
 
-def check_events(setting, stats, screen, ship, bullets, aliens, play_button, scoreboard):
+def check_events(setting, stats, screen, ship, bullets, shurikens, aliens, play_button, scoreboard):
     """Respond to key pressed and mouse events"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -68,24 +68,25 @@ def check_events(setting, stats, screen, ship, bullets, aliens, play_button, sco
         elif event.type == pygame.KEYUP:
             keyup_events(event, ship)
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_click(setting, stats, screen, ship, bullets, aliens, play_button, scoreboard)
+            mouse_click(setting, stats, screen, ship, bullets, shurikens, aliens, play_button, scoreboard)
 
 
-def mouse_click(setting, stats, screen, ship, bullets, aliens, play_button, scoreboard):
+def mouse_click(setting, stats, screen, ship, bullets, shurikens, aliens, play_button, scoreboard):
     """Starts game on play button click"""
     if not stats.game_active:
         mouse_x, mouse_y = pygame.mouse.get_pos()
         if play_button.rect.collidepoint(mouse_x, mouse_y):
-            start_game(setting, stats, screen, ship, bullets, aliens, scoreboard)
+            start_game(setting, stats, screen, ship, bullets, shurikens, aliens, scoreboard)
 
 
-def start_game(setting, stats, screen, ship, bullets, aliens, scoreboard):
+def start_game(setting, stats, screen, ship, bullets, shurikens, aliens, scoreboard):
     """Initialize game elements and start game"""
     pygame.mouse.set_visible(False)
     stats.init_first_level()
     setting.init_first_level()
     aliens.empty()
     bullets.empty()
+    shurikens.empty()
     create_alien_army(setting, screen, ship, aliens)
     ship.center()
     scoreboard.prep_score()
@@ -175,7 +176,7 @@ def update_shurikens(settings, stats, screen, ship, ship_sprite, aliens, bullets
     hits = pygame.sprite.groupcollide(shurikens, ship_sprite, True, True)
 
     if hits:
-        ship_hit(settings, stats, screen, ship, aliens, bullets, scoreboard)
+        ship_hit(settings, stats, screen, ship, shurikens, aliens, bullets, scoreboard)
         ship_sprite.add(ship)
 
 
@@ -211,15 +212,15 @@ def get_number_rows(setting, ship_height, alien_height):
     return number_rows
 
 
-def update_aliens(setting, stats, screen, aliens, ship, bullets, scoreboard):
+def update_aliens(setting, stats, screen, shurikens, aliens, ship, bullets, scoreboard):
     """Update the positions of all aliens in the fleet"""
     check_fleet_edges(setting, aliens)
     aliens.update()
 
-    check_aliens_invasion(setting, stats, screen, ship, aliens, bullets, scoreboard)
+    check_aliens_invasion(setting, stats, screen, ship, shurikens, aliens, bullets, scoreboard)
 
     if pygame.sprite.spritecollideany(ship, aliens):
-        ship_hit(setting, stats, screen, ship, aliens, bullets, scoreboard)
+        ship_hit(setting, stats, screen, ship, shurikens, aliens, bullets, scoreboard)
 
 
 def change_fleet_direction(setting, aliens):
@@ -237,13 +238,14 @@ def check_fleet_edges(setting, aliens):
             break
 
 
-def ship_hit(settings, stats, screen, ship, aliens, bullets, scoreboard):
+def ship_hit(settings, stats, screen, ship, shurikens, aliens, bullets, scoreboard):
     """Respond to ship being hit by alien"""
     if stats.garrison > 0:
         stats.garrison -= 1
         scoreboard.prep_ships()
         aliens.empty()
         bullets.empty()
+        shurikens.empty()
         create_alien_army(settings, screen, ship, aliens)
         ship.center()
         sleep(0.5)
@@ -252,12 +254,12 @@ def ship_hit(settings, stats, screen, ship, aliens, bullets, scoreboard):
         pygame.mouse.set_visible(True)
 
 
-def check_aliens_invasion(settings, stats, screen, ship, aliens, bullets, scoreboard):
+def check_aliens_invasion(settings, stats, screen, ship, shurikens, aliens, bullets, scoreboard):
     """Check if any aliens have reached the bottom of the screen"""
     screen_rect = screen.get_rect()
     for alien in aliens.sprites():
         if alien.rect.bottom >= screen_rect.bottom:
-            ship_hit(settings, stats, screen, ship, aliens, bullets, scoreboard)
+            ship_hit(settings, stats, screen, ship, shurikens, aliens, bullets, scoreboard)
             break
 
 

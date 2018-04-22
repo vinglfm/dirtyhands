@@ -40,8 +40,13 @@ def calculate_aliens_in_row(screen_width, alien_width):
 
 def create_stars(setting, screen, stars):
     """Creates and position shuriken stars"""
+    star_elems = []
     for star_number in range(setting.stars):
-        stars.add(create_star(setting, screen))
+        star = create_star(setting, screen)
+        stars.add(star)
+        star_elems.append(star)
+
+    return star_elems
 
 
 def create_star(setting, screen):
@@ -82,7 +87,7 @@ def start_game(setting, stats, screen, ship, bullets, aliens, scoreboard):
     aliens.empty()
     bullets.empty()
     create_alien_army(setting, screen, ship, aliens)
-    ship.center_ship()
+    ship.center()
     scoreboard.prep_score()
     scoreboard.prep_level()
     scoreboard.prep_ships()
@@ -117,7 +122,7 @@ def keyup_events(event, ship):
         ship.moving_bottom = False
 
 
-def update_screen(settings, screen, stats, scoreboard, stars, ship, aliens, bullets, play_button):
+def update_screen(settings, screen, stats, scoreboard, stars, ship, aliens, bullets, shurikens, play_button):
     """Draw components to game screen"""
     screen.fill(settings.bkg_color)
     stars.draw(screen)
@@ -126,7 +131,10 @@ def update_screen(settings, screen, stats, scoreboard, stars, ship, aliens, bull
     aliens.draw(screen)
 
     for bullet in bullets:
-        bullet.draw_bullet()
+        bullet.draw()
+
+    for shuriken in shurikens:
+        shuriken.draw()
 
     scoreboard.draw()
 
@@ -138,13 +146,37 @@ def update_screen(settings, screen, stats, scoreboard, stars, ship, aliens, bull
 
 def update_bullets(setting, screen, stats, ship, bullets, aliens, scoreboard):
     """Removes bullets that out of range, check hits aliens"""
-    bullets.update()
+    bullets.update(1)
 
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
 
     check_hit_aliens(setting, screen, stats, ship, bullets, aliens, scoreboard)
+
+
+def fire_shurikens(setting, screen, stars, shurikens):
+    """Fire shurikens if available"""
+
+    if len(shurikens) == 0:
+        shooting_star = random.randint(0, 2)
+        new_bullet = Bullet(setting, screen, stars[shooting_star])
+        shurikens.add(new_bullet)
+
+
+def update_shurikens(settings, stats, screen, ship, ship_sprite, aliens, bullets, shurikens, scoreboard):
+    """Removes shurikens that out of range, check hits ship"""
+    shurikens.update(-1)
+
+    for bullet in shurikens.copy():
+        if bullet.rect.bottom >= settings.screen_width:
+            shurikens.remove(bullet)
+
+    hits = pygame.sprite.groupcollide(shurikens, ship_sprite, True, True)
+
+    if hits:
+        ship_hit(settings, stats, screen, ship, aliens, bullets, scoreboard)
+        ship_sprite.add(ship)
 
 
 def check_hit_aliens(setting, screen, stats, ship, bullets, aliens, scoreboard):
@@ -213,7 +245,7 @@ def ship_hit(settings, stats, screen, ship, aliens, bullets, scoreboard):
         aliens.empty()
         bullets.empty()
         create_alien_army(settings, screen, ship, aliens)
-        ship.center_ship()
+        ship.center()
         sleep(0.5)
     else:
         stats.game_active = False

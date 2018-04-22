@@ -16,7 +16,7 @@ class Settings:
 
         self.max_ships = 2
 
-        self.bullet_width = 2000
+        self.bullet_width = 20
         self.bullet_height = 50
         self.bullet_color = (random.random() * 255, random.random() * 255, random.random() * 255)
         self.bullets_allowed = 3

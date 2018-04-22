@@ -22,5 +22,4 @@ class ShurikenStar(Sprite):
 
     def draw(self):
         """Draw shuriken stars at current location"""
-
         self.screen.blit(self.image, self.rect)

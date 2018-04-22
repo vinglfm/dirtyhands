@@ -20,11 +20,11 @@ class Bullet(Sprite):
         self.color = settings.bullet_color
         self.speed_factor = settings.bullet_speed_multiplier
 
-    def update(self):
-        """Move the bullet up the screen"""
-        self.y -= self.speed_factor
+    def update(self, direction):
+        """Move the bullet toward direction in the screen"""
+        self.y -= self.speed_factor * direction
         self.rect.y = self.y
 
-    def draw_bullet(self):
+    def draw(self):
         """Draw the bullet"""
         pygame.draw.rect(self.screen, self.color, self.rect)

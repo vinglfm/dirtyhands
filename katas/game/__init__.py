@@ -17,6 +17,7 @@ def run_game():
 
     battle_ship = Ship(screen, setting)
     bullets = Group()
+    shurikens = Group()
     aliens = Group()
     stars = Group()
     statistic = Statistic(setting)
@@ -24,17 +25,23 @@ def run_game():
 
     create_alien_army(setting, screen, battle_ship, aliens)
 
-    create_stars(setting, screen, stars)
+    star_elems = create_stars(setting, screen, stars)
 
     play_button = Button(screen, "Play")
+
+    ship_sprite = Group()
+    ship_sprite.add(battle_ship)
     while True:
         check_events(setting, statistic, screen, battle_ship, bullets, aliens, play_button, score_board)
 
         if statistic.game_active:
             battle_ship.update()
             update_bullets(setting, screen, statistic, battle_ship, bullets, aliens, score_board)
+            update_shurikens(setting, statistic, screen, battle_ship, ship_sprite, aliens, bullets, shurikens, score_board)
             update_aliens(setting, statistic, screen, aliens, battle_ship, bullets, score_board)
-        update_screen(setting, screen, statistic, score_board, stars, battle_ship, aliens, bullets, play_button)
+            fire_shurikens(setting, screen, star_elems, shurikens)
+        update_screen(setting, screen, statistic, score_board, stars, battle_ship, aliens, bullets, shurikens,
+                      play_button)
 
 
 run_game()

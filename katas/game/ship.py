@@ -46,7 +46,7 @@ class Ship(Sprite):
         """Draw the ship at its current location"""
         self.screen.blit(self.image, self.rect)
 
-    def center_ship(self):
+    def center(self):
         """Center ship at bottom of the screen"""
         self.centery = self.screen_rect.bottom - self.rect.width
         self.rect.centery = self.centery
